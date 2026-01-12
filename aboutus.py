@@ -33,5 +33,5 @@ def render(df, df_raw, selected_year):
     **Contact Us**  
     📧 Email: adagustin@mymail.mapua.edu.ph, mcpacheco@mymail.mapua.edu.ph, jaacabrera@mymail.mapua.edu.ph
 
-    📍 Location: Philippines
+    📍 Location: 191 Pablo Ocampo Sr. Extension, Brgy. Sta. Cruz, Makati City, 1205 Metro Manila, Philippines
     """)
