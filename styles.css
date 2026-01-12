@@ -1,0 +1,101 @@
+/* General dashboard styling */
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: var(--text-color); /* adapts to theme */
+}
+
+/* Section headings (### in Streamlit -> <h3>) */
+h3 {
+    font-size: 18px !important;
+    font-weight: bold !important;
+    color: var(--text-color) !important;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+/* Metric labels and values */
+.metric-label {
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--text-color);
+}
+.metric-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+/* Plotly chart text overrides */
+.js-plotly-plot .main-svg text.gtitle,
+.js-plotly-plot .main-svg text.xtitle,
+.js-plotly-plot .main-svg text.ytitle,
+.js-plotly-plot .main-svg text.xtick,
+.js-plotly-plot .main-svg text.ytick,
+.js-plotly-plot .main-svg text.legendtext {
+    fill: var(--text-color) !important;
+    color: var(--text-color) !important;
+}
+
+/* Override Streamlit's st.metric widget globally */
+[data-testid="stMetricValue"] {
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    color: var(--text-color) !important;
+}
+
+[data-testid="stMetricLabel"] {
+    font-size: 14px !important;
+    font-weight: bold !important;
+    color: var(--text-color) !important;
+}
+
+/* Removed fixed chart height clamp
+   Let Python control chart height dynamically */
+
+/* Chart titles */
+.plotly-title,
+.js-plotly-plot .main-svg text.gtitle {
+    font-size: 16px !important;
+    font-weight: bold !important;
+    fill: var(--text-color) !important;
+    color: var(--text-color) !important;
+    text-anchor: middle !important;
+}
+
+/* Axis titles */
+.plotly-axis-title,
+.js-plotly-plot .main-svg text.xtitle,
+.js-plotly-plot .main-svg text.ytitle {
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    fill: var(--text-color) !important;
+    color: var(--text-color) !important;
+}
+
+/* Tick labels */
+.plotly-tick-label,
+.js-plotly-plot .main-svg text.xtick,
+.js-plotly-plot .main-svg text.ytick {
+    font-size: 10px !important;
+    fill: var(--text-color) !important;
+    color: var(--text-color) !important;
+}
+
+/* Reduce Streamlit container padding */
+.block-container {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+}
+
+/* Sidebar styling */
+.css-1d391kg {
+    font-size: 13px;
+    color: var(--text-color);
+}
+
+/* Tabs styling */
+.stTabs [role="tab"] {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-color);
+}
