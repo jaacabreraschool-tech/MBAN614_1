@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-def render(df, df_raw, selected_year, df_attrition=None):
+def render(df, df_raw, selected_year, df_attrition=None, summary_file="HR Cleaned Data 01.09.26.xlsx"):
     st.markdown("## 📊 Attrition and Retention Overview")
 
     # -----------------------------
@@ -29,7 +29,7 @@ def render(df, df_raw, selected_year, df_attrition=None):
         df_raw["Year"] = pd.to_datetime(df_raw["Calendar Year"]).dt.year
 
     # -----------------------------
-    # Row 0: Summary Metrics
+    # Row 0: Summary Metrics (Net Change fixed to use Summary tab col H)
     # -----------------------------
     summary_year = df_raw[df_raw["Year"] == selected_year]
 
@@ -39,14 +39,48 @@ def render(df, df_raw, selected_year, df_attrition=None):
 
     retention_rate = (retained / total_employees) * 100 if total_employees > 0 else 0
     attrition_rate = (resigned / total_employees) * 100 if total_employees > 0 else 0
-    net_change = retained - resigned
+
+    # Load official Net Change from Summary tab (Column H)
+    net_change_to_show = 0  # default
+    try:
+        summary_df = pd.read_excel(summary_file, sheet_name="Summary")
+        summary_df.columns = summary_df.columns.str.strip()
+        
+        if "Year" in summary_df.columns and "Net Change" in summary_df.columns:
+            # Convert Year to integer, handling both datetime and numeric formats
+            if pd.api.types.is_datetime64_any_dtype(summary_df["Year"]):
+                summary_df["Year"] = summary_df["Year"].dt.year
+            else:
+                summary_df["Year"] = pd.to_numeric(summary_df["Year"], errors="coerce")
+            
+            summary_df["Year"] = summary_df["Year"].astype(int)
+            summary_df["Net Change"] = pd.to_numeric(summary_df["Net Change"], errors="coerce").fillna(0).astype(int)
+            
+            # Create lookup dictionary
+            year_to_net = summary_df.set_index("Year")["Net Change"].to_dict()
+            
+            if selected_year in year_to_net:
+                net_change_to_show = year_to_net[selected_year]
+    except Exception as e:
+        st.warning(f"Could not load Net Change from Summary sheet: {str(e)}")
+        net_change_to_show = 0
 
     colA, colB, colC, colD, colE = st.columns(5)
-    with colA: st.markdown("<div class='metric-label'>Total Employees</div>", unsafe_allow_html=True); st.markdown(f"<div class='metric-value'>{total_employees}</div>", unsafe_allow_html=True)
-    with colB: st.markdown("<div class='metric-label'>Resigned</div>", unsafe_allow_html=True); st.markdown(f"<div class='metric-value'>{resigned}</div>", unsafe_allow_html=True)
-    with colC: st.markdown("<div class='metric-label'>Retention Rate</div>", unsafe_allow_html=True); st.markdown(f"<div class='metric-value'>{retention_rate:.1f}%</div>", unsafe_allow_html=True)
-    with colD: st.markdown("<div class='metric-label'>Attrition Rate</div>", unsafe_allow_html=True); st.markdown(f"<div class='metric-value'>{attrition_rate:.1f}%</div>", unsafe_allow_html=True)
-    with colE: st.markdown("<div class='metric-label'>Net Change</div>", unsafe_allow_html=True); st.markdown(f"<div class='metric-value'>{net_change}</div>", unsafe_allow_html=True)
+    with colA:
+        st.markdown("<div class='metric-label'>Total Employees</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='metric-value'>{total_employees}</div>", unsafe_allow_html=True)
+    with colB:
+        st.markdown("<div class='metric-label'>Resigned</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='metric-value'>{resigned}</div>", unsafe_allow_html=True)
+    with colC:
+        st.markdown("<div class='metric-label'>Retention Rate</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='metric-value'>{retention_rate:.1f}%</div>", unsafe_allow_html=True)
+    with colD:
+        st.markdown("<div class='metric-label'>Attrition Rate</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='metric-value'>{attrition_rate:.1f}%</div>", unsafe_allow_html=True)
+    with colE:
+        st.markdown("<div class='metric-label'>Net Change</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='metric-value'>{net_change_to_show}</div>", unsafe_allow_html=True)
 
     # -----------------------------
     # Row 1: Resigned per Year
@@ -73,14 +107,14 @@ def render(df, df_raw, selected_year, df_attrition=None):
     with col1:
         st.markdown("#### Retention by Gender")
         retention_gender = df_raw.groupby(["Year", "Gender"])["Retention"].sum().reset_index()
-        retention_rate = df_raw.groupby("Year")["Retention"].mean().reset_index()
-        retention_rate["RetentionRatePct"] = retention_rate["Retention"] * 100
+        retention_rate_df = df_raw.groupby("Year")["Retention"].mean().reset_index()
+        retention_rate_df["RetentionRatePct"] = retention_rate_df["Retention"] * 100
         fig = go.Figure()
         for gender in retention_gender["Gender"].unique():
             subset = retention_gender[retention_gender["Gender"] == gender]
             fig.add_bar(x=subset["Year"], y=subset["Retention"], name=gender,
                         marker_color="#ADD8E6" if gender == "Female" else "#00008B", yaxis="y1")
-        fig.add_trace(go.Scatter(x=retention_rate["Year"], y=retention_rate["RetentionRatePct"],
+        fig.add_trace(go.Scatter(x=retention_rate_df["Year"], y=retention_rate_df["RetentionRatePct"],
                                  mode="lines+markers", name="Retention Rate (%)",
                                  line=dict(color="orange", width=3), yaxis="y2"))
         fig.update_layout(
@@ -116,23 +150,17 @@ def render(df, df_raw, selected_year, df_attrition=None):
         )
         st.plotly_chart(fig_retention, use_container_width=True, key="retention_by_generation")
 
-        # -----------------------------
-    # Row 3: Attrition by Month (selected year) + Voluntary vs Involuntary (2020–2025)
+    # -----------------------------
+    # Row 3: Attrition Analysis
     # -----------------------------
     st.markdown("### Attrition Analysis")
 
     col1, col2 = st.columns(2)
 
-    # -----------------------------
-    # Chart 1: Attrition by Month (selected year)
-    # -----------------------------
     with col1:
         st.markdown(f"#### Attrition by Month ({selected_year})")
         attrition_selected = df_raw[(df_raw["Year"] == selected_year) & (df_raw["ResignedFlag"] == 1)].copy()
-
-        # Ensure Month column exists
         attrition_selected["Month"] = pd.to_datetime(attrition_selected["Resignation Date"]).dt.month_name()
-
         monthly_attrition = (
             attrition_selected.groupby("Month")
             .size()
@@ -142,153 +170,73 @@ def render(df, df_raw, selected_year, df_attrition=None):
             ])
             .reset_index(name="AttritionCount")
         )
-
         fig_monthly = px.bar(
-            monthly_attrition,
-            x="Month",
-            y="AttritionCount",
-            text="AttritionCount",
-            color_discrete_sequence=["#00008B"],  # dark blue to match palette
-            title=f"Monthly Attrition in {selected_year}"
+            monthly_attrition, x="Month", y="AttritionCount", text="AttritionCount",
+            color_discrete_sequence=["#00008B"], title=f"Monthly Attrition in {selected_year}"
         )
-
         fig_monthly.update_layout(
             height=300, margin=dict(l=20, r=20, t=40, b=20),
-            yaxis=dict(title="Attrition Count",
-                       tickfont=dict(color="var(--text-color)"),
-                       titlefont=dict(color="var(--text-color)")),
-            xaxis=dict(title="Month",
-                       tickfont=dict(color="var(--text-color)"),
-                       titlefont=dict(color="var(--text-color)")),
-            font=dict(color="var(--text-color)"),
-            title_font=dict(color="var(--text-color)"),
+            yaxis=dict(title="Attrition Count", tickfont=dict(color="var(--text-color)"), titlefont=dict(color="var(--text-color)")),
+            xaxis=dict(title="Month", tickfont=dict(color="var(--text-color)"), titlefont=dict(color="var(--text-color)")),
+            font=dict(color="var(--text-color)"), title_font=dict(color="var(--text-color)"),
             legend=dict(font=dict(color="var(--text-color)")),
-            uniformtext_minsize=10,
-            uniformtext_mode="hide"
+            uniformtext_minsize=10, uniformtext_mode="hide"
         )
         st.plotly_chart(fig_monthly, use_container_width=True, key="attrition_by_month")
 
-    # -----------------------------
-    # Chart 2: Voluntary vs Involuntary (2020–2025)
-    # -----------------------------
     with col2:
         st.markdown("#### Attrition by Voluntary vs Involuntary (2020–2025)")
-
         if df_attrition is not None:
             if "Year" not in df_attrition.columns and "Calendar Year" in df_attrition.columns:
                 df_attrition["Year"] = pd.to_datetime(df_attrition["Calendar Year"]).dt.year
-
             attrition_df = df_attrition[
                 (df_attrition["Year"].between(2020, 2025)) &
                 (df_attrition["Status"].isin(["Voluntary", "Involuntary"]))
             ]
-
-            attrition_counts = (
-                attrition_df.groupby(["Year", "Status"])
-                .size()
-                .reset_index(name="Count")
-            )
-
+            attrition_counts = attrition_df.groupby(["Year", "Status"]).size().reset_index(name="Count")
             fig_attrition = px.bar(
-                attrition_counts,
-                x="Year",
-                y="Count",
-                color="Status",
-                barmode="group",
-                text="Count",
-                color_discrete_map={
-                    "Voluntary": "#ADD8E6",   # light blue
-                    "Involuntary": "#00008B"  # dark blue
-                },
+                attrition_counts, x="Year", y="Count", color="Status", barmode="group", text="Count",
+                color_discrete_map={"Voluntary": "#ADD8E6", "Involuntary": "#00008B"},
                 title="Voluntary vs Involuntary Attrition"
             )
-
             fig_attrition.update_layout(
-                height=300,
-                margin=dict(l=20, r=20, t=40, b=20),
-                yaxis=dict(title="Attrition Count",
-                           tickfont=dict(color="var(--text-color)"),
-                           titlefont=dict(color="var(--text-color)")),
-                xaxis=dict(title="Year",
-                           tickfont=dict(color="var(--text-color)"),
-                           titlefont=dict(color="var(--text-color)")),
-                font=dict(color="var(--text-color)"),
-                title_font=dict(color="var(--text-color)"),
+                height=300, margin=dict(l=20, r=20, t=40, b=20),
+                yaxis=dict(title="Attrition Count", tickfont=dict(color="var(--text-color)"), titlefont=dict(color="var(--text-color)")),
+                xaxis=dict(title="Year", tickfont=dict(color="var(--text-color)"), titlefont=dict(color="var(--text-color)")),
+                font=dict(color="var(--text-color)"), title_font=dict(color="var(--text-color)"),
                 legend=dict(font=dict(color="var(--text-color)")),
-                uniformtext_minsize=10,
-                uniformtext_mode="hide"
+                uniformtext_minsize=10, uniformtext_mode="hide"
             )
-
             st.plotly_chart(fig_attrition, use_container_width=True, key="attrition_by_type")
-
         else:
             st.info("No Voluntary/Involuntary attrition dataset provided yet.")
 
-               # -----------------------------
-    # Row 4: Net Talent Gain/Loss
+    # -----------------------------
+    # Row 4: Net Talent Gain/Loss (already uses Summary tab Net Change)
     # -----------------------------
     st.markdown("### Net Talent Gain/Loss")
 
-    # Load Summary tab from Excel
-    summary_df = pd.read_excel("HR Cleaned Data 01.09.26.xlsx", sheet_name="Summary")
-
-    # Keep relevant columns
-    net_df = summary_df[["Year", "Joins", "Resignations", "Net Change"]].copy()
+    summary_df_row4 = pd.read_excel(summary_file, sheet_name="Summary")
+    net_df = summary_df_row4[["Year", "Joins", "Resignations", "Net Change"]].copy()
     net_df.rename(columns={"Net Change": "NetChange"}, inplace=True)
-
-    # Assign status for color coding (only Increase/Decrease)
-    net_df["Status"] = net_df["NetChange"].apply(
-        lambda x: "Increase" if x > 0 else "Decrease"
-    )
-
-    # Force categorical ordering for legend
-    net_df["Status"] = pd.Categorical(
-        net_df["Status"],
-        categories=["Increase", "Decrease"],
-        ordered=True
-    )
-
-    # Convert Year to string to avoid fractional values
+    net_df["Status"] = net_df["NetChange"].apply(lambda x: "Increase" if x > 0 else "Decrease")
+    net_df["Status"] = pd.Categorical(net_df["Status"], categories=["Increase", "Decrease"], ordered=True)
     net_df["Year"] = net_df["Year"].astype(str)
 
-    # Define custom colors
-    color_map = {
-        "Increase": "#2E8B57",     # dark green
-        "Decrease": "#B22222"      # red
-    }
-
-    # Plot bar chart with Joins + Resignations in hover
+    color_map = {"Increase": "#2E8B57", "Decrease": "#B22222"}
     fig_net = px.bar(
-        net_df,
-        x="Year",
-        y="NetChange",
-        text=net_df["NetChange"].apply(lambda x: f"{x:+d}"),  # show +/– signs
-        color="Status",
-        color_discrete_map=color_map,
-        hover_data={
-            "Joins": True,
-            "Resignations": True,
-            "NetChange": True,
-            "Status": True,
-            "Year": True
-        },
+        net_df, x="Year", y="NetChange",
+        text=net_df["NetChange"].apply(lambda x: f"{x:+d}"),
+        color="Status", color_discrete_map=color_map,
+        hover_data={"Joins": True, "Resignations": True, "NetChange": True, "Status": True, "Year": True},
         title="Net Talent Gain/Loss by Year"
     )
-
     fig_net.update_layout(
-        height=320,
-        margin=dict(l=20, r=20, t=40, b=20),
-        yaxis=dict(title="Net Change",
-                   tickfont=dict(color="var(--text-color)"),
-                   titlefont=dict(color="var(--text-color)")),
-        xaxis=dict(title="Year",
-                   tickfont=dict(color="var(--text-color)"),
-                   titlefont=dict(color="var(--text-color)")),
-        font=dict(color="var(--text-color)"),
-        title_font=dict(color="var(--text-color)"),
+        height=320, margin=dict(l=20, r=20, t=40, b=20),
+        yaxis=dict(title="Net Change", tickfont=dict(color="var(--text-color)"), titlefont=dict(color="var(--text-color)")),
+        xaxis=dict(title="Year", tickfont=dict(color="var(--text-color)"), titlefont=dict(color="var(--text-color)")),
+        font=dict(color="var(--text-color)"), title_font=dict(color="var(--text-color)"),
         legend=dict(font=dict(color="var(--text-color)")),
-        uniformtext_minsize=10,
-        uniformtext_mode="hide"
+        uniformtext_minsize=10, uniformtext_mode="hide"
     )
-
     st.plotly_chart(fig_net, use_container_width=True, key="net_talent_change")
