@@ -16,8 +16,9 @@ st.set_page_config(page_title="ACJ Company Dashboard", layout="wide")
 # -----------------------------
 # Load CSS file globally
 # -----------------------------
-with open("styles.css") as f:
+with open("assets/styles.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
 
 # -----------------------------
 # Load Excel outputs
