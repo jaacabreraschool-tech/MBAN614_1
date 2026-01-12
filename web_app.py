@@ -2,11 +2,11 @@ import streamlit as st
 import pandas as pd
 
 # Import tab modules
-import workforce
-import attrition_retention as attrition
-import career
-import survey
-import aboutus
+# import workforce
+# import attrition_retention as attrition
+# import career
+# import survey
+# import aboutus
 
 # -----------------------------
 # Page configuration
