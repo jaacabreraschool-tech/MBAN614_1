@@ -92,9 +92,8 @@ def render(df, df_raw, selected_year):
     colA, colB, colC = st.columns(3)
 
     with colA:
-        st.markdown("### Age Distribution")
-        age = df["Age Distribution"]
-        age_year = age[age["Year"] == selected_year]
+        st.markdown(f"### Age Distribution ({selected_year})")
+        age_year = df["Age Distribution"][df["Age Distribution"]["Year"] == selected_year].copy()
         avg_age = round(age_year["Age"].mean(), 1) if not age_year.empty else 0
         median_age = float(age_year["Age"].median()) if not age_year.empty else 0
 
@@ -108,7 +107,6 @@ def render(df, df_raw, selected_year):
                 y="Count",
                 color="Generation",
                 barmode="group",
-                title=f"Age Distribution ({selected_year})",
                 color_discrete_sequence=["#ADD8E6", "#00008B", "#87CEEB", "#1E3A8A", "#4682B4"]
             )
         else:
@@ -116,13 +114,13 @@ def render(df, df_raw, selected_year):
                 age_year,
                 x="Age",
                 y="Count",
-                title=f"Age Distribution ({selected_year})",
                 color_discrete_sequence=["#ADD8E6", "#00008B"]
             )
+        fig3.update_layout(showlegend=True, margin=dict(l=20, r=20, t=20, b=20))
         st.plotly_chart(fig3, use_container_width=True, height=300, key="age_distribution")
 
     with colB:
-        st.markdown("### Gender Diversity")
+        st.markdown(f"### Gender Diversity ({selected_year})")
         gender = df["Gender Diversity"]
         gender_year = gender[gender["Year"] == selected_year]
         gender_counts = gender_year.groupby("Gender")["Count"].sum()
@@ -135,7 +133,7 @@ def render(df, df_raw, selected_year):
         st.plotly_chart(fig4, use_container_width=True, height=300)
 
     with colC:
-        st.markdown("### Tenure Analysis")
+        st.markdown(f"### Tenure Analysis ({selected_year})")
         avg_tenure = round(tenure_year["Tenure"].mean(), 1) if not tenure_year.empty else 0
         median_tenure = float(tenure_year["Tenure"].median()) if not tenure_year.empty else 0
         max_tenure = float(tenure_year["Tenure"].max()) if not tenure_year.empty else 0
