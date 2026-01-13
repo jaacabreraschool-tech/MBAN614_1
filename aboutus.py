@@ -211,7 +211,7 @@ def render(df, df_raw, selected_year):
     # Research Team
     # -----------------------------
     with st.container(border=True):
-        st.markdown("### 👨‍🎓 Research Team & Acknowledgments")
+        st.markdown("### 👨‍🎓 Research Team")
         
         col1, col2 = st.columns(2)
         
