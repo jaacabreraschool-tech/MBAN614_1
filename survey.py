@@ -246,8 +246,8 @@ def render(df, df_raw, selected_year):
             
             importance_df["Importance %"] = (importance_df["Importance"] * 100).round(1)
             
-            # Display metrics
-            st.markdown(f"<div class='metric-label'>Top Driver: {importance_df.iloc[0]['Driver']}</div>", unsafe_allow_html=True)
+            # Display metrics with year
+            st.markdown(f"<div class='metric-label'>Top Driver ({selected_year}): {importance_df.iloc[0]['Driver']}</div>", unsafe_allow_html=True)
             st.markdown(f"<div class='metric-value'>{importance_df.iloc[0]['Importance %']}%</div>", unsafe_allow_html=True)
             
             # Driver Importance Chart
@@ -340,8 +340,8 @@ def render(df, df_raw, selected_year):
             
             importance_promo_df["Importance %"] = (importance_promo_df["Importance"] * 100).round(1)
             
-            # Display metrics
-            st.markdown(f"<div class='metric-label'>Top Driver: {importance_promo_df.iloc[0]['Driver']}</div>", unsafe_allow_html=True)
+            # Display metrics with year
+            st.markdown(f"<div class='metric-label'>Top Driver ({selected_year}): {importance_promo_df.iloc[0]['Driver']}</div>", unsafe_allow_html=True)
             st.markdown(f"<div class='metric-value'>{importance_promo_df.iloc[0]['Importance %']}%</div>", unsafe_allow_html=True)
             
             # Driver Importance Chart
