@@ -213,7 +213,7 @@ def render(df, df_raw, selected_year):
     with st.container(border=True):
         st.markdown("### 👨‍🎓 Research Team")
         
-        col1, col2 = st.columns(2)
+        col1, col2, col3 = st.columns(3)
         
         with col1:
             st.markdown("""
@@ -222,12 +222,18 @@ def render(df, df_raw, selected_year):
             - Mapúa University Makati
             - Email: angelie.agustin@mapua.edu.ph
             - LinkedIn: https://ph.linkedin.com/in/angelie-agustin
-                        
+            """)
+        
+        with col2:
+            st.markdown("""
             **Ma. Catherine Pacheco**
             - Master's Student, MAN
             - Mapúa University Makati
             - Email: mcpacheco@mymail.mapua.edu.ph
-            
+            """)
+        
+        with col3:
+            st.markdown("""
             **Juliana Amparo A. Cabrera**
             - Master's Student, MAN
             - Mapúa University Makati
@@ -241,18 +247,8 @@ def render(df, df_raw, selected_year):
     # -----------------------------
     with st.container(border=True):
         st.markdown("### 📧 Contact Information & Resources")
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.markdown("""
-            #### For Technical Questions
-            **GitHub**: https://github.com/jaacabreraschool-tech/MBAN614_1/blob/main/workforce.py 
-                    
-            #### Feedback
-            We welcome feedback to improve this dashboard.  
-            **Submit via**: Email above
-            """)
+        st.markdown("**GitHub**: https://github.com/jaacabreraschool-tech/MBAN614_1/blob/main/workforce.py")
+        st.markdown("We welcome feedback to improve this dashboard. **Submit via**: Email above")
     
     # -----------------------------
     # Footer
