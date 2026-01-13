@@ -13,8 +13,9 @@ def render(df, df_raw, selected_year):
         st.markdown("""
         #### Purpose
         This interactive HR Analytics Dashboard provides comprehensive workforce insights to support 
-        data-driven decision-making in human resource management. Developed as part of a Master's 
-        thesis, this platform consolidates 6 years of HR data (2020-2025) covering 1,400+ employees.
+        data-driven decision-making in human resource management. Developed as a final project for 
+        **MBAN620 CGON01 - Business Data Visualization** at Mapúa University Makati, this platform 
+        consolidates 6 years of HR data (2020-2025) covering 1,400+ employees.
         
         #### Key Objectives
         - 📈 **Real-time Visibility**: Monitor workforce composition, demographics, and trends
