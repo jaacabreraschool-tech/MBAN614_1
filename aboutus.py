@@ -295,7 +295,7 @@ def render(df, df_raw, selected_year):
             
             ---
             
-            Juliana "Jam" is a Software Quality Assurance professional specializing in testing desktop, web, and mobile applications. With expertise in analyzing business requirements, crafting test strategies, and executing manual tests, Jam ensures high-quality deliverables across platforms. A graduate of Mapúa University, Jam is currently pursuing an MAN at Mapúa University to continuously upskill.
+            Juliana "Jam" is a Software Quality Assurance professional specializing in testing desktop, web, and mobile applications. With expertise in analyzing business requirements, crafting test strategies, and executing manual tests. Jam ensures high-quality deliverables across platforms. A graduate of Mapúa University, Jam is currently pursuing MAN at Mapúa University to continuously upskill.
             """)
     
     # -----------------------------
