@@ -232,7 +232,7 @@ def render(df, df_raw, selected_year):
             - Master's Student, MAN
             - Mapúa University Makati
             - Email: jaacabrera@mymail.mapua.edu.ph
-            - LinkedIn: https://ph.linkedin.com/in/juliana-cabrera
+            - LinkedIn: https://www.linkedin.com/in/jaacabrera/
             """)
     
     
