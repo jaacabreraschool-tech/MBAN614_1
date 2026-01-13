@@ -11,7 +11,11 @@ import aboutus
 # -----------------------------
 # Page configuration
 # -----------------------------
-st.set_page_config(page_title="ACJ Company Dashboard", layout="wide")
+st.set_page_config(
+    page_title="ACJ Dashboard", 
+    layout="wide",
+    page_icon="📊"
+)
 
 # -----------------------------
 # Load CSS file globally
