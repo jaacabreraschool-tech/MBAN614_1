@@ -47,7 +47,7 @@ def render(df, df_raw, selected_year):
     # Normalize values for charts
     # -----------------------------
     df_raw["Resignee Checking"] = df_raw["Resignee Checking"].str.strip().str.upper()
-    df_raw["Generation"] = df_raw["Generation"].str.strip().str.capitalize()
+    df_raw["Generation"] = df_raw["Generation"].str.strip().str.title()  # Use title() for proper capitalization
     df_raw["Position/Level"] = df_raw["Position/Level"].str.strip()
     df_raw["Gender"] = df_raw["Gender"].str.strip().str.capitalize()
     if "Age Bucket" in df_raw.columns:
@@ -82,17 +82,30 @@ def render(df, df_raw, selected_year):
             .sort_values("Calendar Year")
         )
         
-        # Standardized generation colors
+        # Define generation order (alphabetical)
+        generation_order = ["Baby Boomer", "Gen X", "Gen Z", "Millennial"]
+        
+        # Standardized generation colors - unique blue shades
         generation_colors = {
-            "Gen Z": "#ADD8E6",
-            "Millennial": "#00008B",
-            "Gen X": "#87CEEB",
-            "Boomer": "#1E3A8A"
+            "Gen Z": "#87CEEB",           # Sky Blue
+            "Millennial": "#4169E1",      # Royal Blue
+            "Gen X": "#1E90FF",           # Dodger Blue
+            "Baby Boomer": "#00008B",     # Dark Blue
+            "Boomer": "#00008B"           # Dark Blue (fallback)
         }
+        
+        # Convert Generation to categorical with defined order
+        headcount_gen["Generation"] = pd.Categorical(headcount_gen["Generation"], categories=generation_order, ordered=True)
         
         fig2 = px.bar(headcount_gen, x="Calendar Year", y="Headcount",
                       color="Generation", barmode="stack",
-                      color_discrete_map=generation_colors)
+                      color_discrete_map=generation_colors,
+                      category_orders={"Generation": generation_order})
+        fig2.update_layout(
+            height=300,
+            margin=dict(l=20, r=20, t=20, b=20),
+            showlegend=True
+        )
         st.plotly_chart(fig2, use_container_width=True, height=300)
 
     # -----------------------------
@@ -110,12 +123,21 @@ def render(df, df_raw, selected_year):
         a1.markdown(f"<div class='metric-label'>Average Age</div><div class='metric-value'>{avg_age}</div>", unsafe_allow_html=True)
         a2.markdown(f"<div class='metric-label'>Median Age</div><div class='metric-value'>{median_age}</div>", unsafe_allow_html=True)
 
-        # Standardized generation colors
+        # Define generation order (alphabetical)
+        generation_order = ["Baby Boomer", "Gen X", "Gen Z", "Millennial"]
+        
+        # Standardized generation colors - unique blue shades (normalize for matching)
+        if "Generation" in age_year.columns:
+            age_year["Generation"] = age_year["Generation"].str.strip().str.title()
+            # Convert to categorical with defined order
+            age_year["Generation"] = pd.Categorical(age_year["Generation"], categories=generation_order, ordered=True)
+        
         generation_colors = {
-            "Gen Z": "#ADD8E6",
-            "Millennial": "#00008B",
-            "Gen X": "#87CEEB",
-            "Boomer": "#1E3A8A"
+            "Gen Z": "#87CEEB",           # Sky Blue
+            "Millennial": "#4169E1",      # Royal Blue
+            "Gen X": "#1E90FF",           # Dodger Blue
+            "Baby Boomer": "#00008B",     # Dark Blue
+            "Boomer": "#00008B"           # Dark Blue (fallback)
         }
 
         if "Generation" in age_year.columns:
@@ -124,7 +146,8 @@ def render(df, df_raw, selected_year):
                 y="Count",
                 color="Generation",
                 barmode="group",
-                color_discrete_map=generation_colors
+                color_discrete_map=generation_colors,
+                category_orders={"Generation": generation_order}
             )
         else:
             fig3 = px.histogram(
