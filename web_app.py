@@ -1,87 +1,190 @@
-import streamlit as st
-import pandas as pd
+/* General dashboard styling */
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: var(--text-color); /* adapts to theme */
+}
 
-# Import tab modules
-import workforce
-import attrition_retention as attrition
-import career
-import survey
-import aboutus
+/* Main page title (# in Streamlit -> <h1>) */
+h1 {
+    font-size: 2rem !important;
+    font-weight: 700 !important;
+    margin-bottom: 1rem !important;
+    margin-top: 0.5rem !important;
+    color: var(--text-color) !important;
+    line-height: 1.2 !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+}
 
-# -----------------------------
-# Page configuration
-# -----------------------------
-st.set_page_config(
-    page_title="ACJ Dashboard", 
-    layout="wide",
-    page_icon="📊"
-)
+/* Main section titles (## in Streamlit -> <h2>) */
+h2 {
+    font-size: 1.75rem !important;
+    font-weight: 700 !important;
+    margin-bottom: 1.5rem !important;
+    margin-top: 0.5rem !important;
+    color: var(--text-color) !important;
+    line-height: 1.2 !important;
+}
 
-# -----------------------------
-# Load CSS file globally
-# -----------------------------
-with open("styles.css") as f:
-    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+/* Section headings (### in Streamlit -> <h3>) - styled as h5 */
+h3 {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    margin-bottom: 0.5rem !important;
+    margin-top: 0.75rem !important;
+    color: var(--text-color) !important;
+    line-height: 1.5 !important;
+}
 
-# -----------------------------
-# Load Excel outputs
-# -----------------------------
-# Main HR analysis outputs (multi-sheet workbook)
-df = pd.read_excel("HR_Analysis_Output.xlsx", sheet_name=None)
+/* Consistent heading styles across all tabs */
+h4 {
+    font-size: 1.15rem !important;
+    font-weight: 600 !important;
+    margin-bottom: 0.75rem !important;
+    margin-top: 1rem !important;
+    color: var(--text-color) !important;
+    line-height: 1.4 !important;
+}
 
-# Cleaned HR dataset
-df_raw = pd.read_excel("HR Cleaned Data 01.09.26.xlsx", sheet_name="Data")
+/* Subsection headings (h5) */
+h5 {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    margin-bottom: 0.5rem !important;
+    margin-top: 0.75rem !important;
+    color: var(--text-color) !important;
+    line-height: 1.5 !important;
+}
 
-# Voluntary/Involuntary attrition dataset
-df_attrition = pd.read_excel("Attrition-Vol and Invol.xlsx")
+/* Metric labels and values */
+.metric-label {
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--text-color);
+}
+.metric-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-color);
+}
 
-# -----------------------------
-# Ensure Year column exists
-# -----------------------------
-if "Year" not in df_raw.columns and "Calendar Year" in df_raw.columns:
-    df_raw["Year"] = pd.to_datetime(df_raw["Calendar Year"]).dt.year
+/* Plotly chart text overrides */
+.js-plotly-plot .main-svg text.gtitle,
+.js-plotly-plot .main-svg text.xtitle,
+.js-plotly-plot .main-svg text.ytitle,
+.js-plotly-plot .main-svg text.xtick,
+.js-plotly-plot .main-svg text.ytick,
+.js-plotly-plot .main-svg text.legendtext {
+    fill: var(--text-color) !important;
+    color: var(--text-color) !important;
+}
 
-if "Year" not in df_attrition.columns and "Calendar Year" in df_attrition.columns:
-    df_attrition["Year"] = pd.to_datetime(df_attrition["Calendar Year"]).dt.year
+/* Override Streamlit's st.metric widget globally */
+[data-testid="stMetricValue"] {
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    color: var(--text-color) !important;
+}
 
-# -----------------------------
-# App Title
-# -----------------------------
-st.title("ACJ Company Dashboard")
+[data-testid="stMetricLabel"] {
+    font-size: 14px !important;
+    font-weight: bold !important;
+    color: var(--text-color) !important;
+}
 
-# -----------------------------
-# Year selector
-# -----------------------------
-years = [2020, 2021, 2022, 2023, 2024, 2025]
-with st.spinner("Loading data..."):
-    selected_year = st.radio("Select Year", years, horizontal=True)
+/* Removed fixed chart height clamp
+   Let Python control chart height dynamically */
 
-# -----------------------------
-# Tabs
-# -----------------------------
-tabs = st.tabs([
-    "Workforce Profile & Demographics",
-    "Attrition & Retention",
-    "Career Progression",
-    "Survey & Feedback Analytics",
-    "About Us"
-])
+/* Chart titles */
+.plotly-title,
+.js-plotly-plot .main-svg text.gtitle {
+    font-size: 16px !important;
+    font-weight: bold !important;
+    fill: var(--text-color) !important;
+    color: var(--text-color) !important;
+    text-anchor: middle !important;
+}
 
-# -----------------------------
-# Call each tab's render function
-# -----------------------------
-with tabs[0]:
-    workforce.render(df, df_raw, selected_year)
+/* Axis titles */
+.plotly-axis-title,
+.js-plotly-plot .main-svg text.xtitle,
+.js-plotly-plot .main-svg text.ytitle {
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    fill: var(--text-color) !important;
+    color: var(--text-color) !important;
+}
 
-with tabs[1]:
-    # Pass df_attrition into the attrition tab
-    attrition.render(df, df_raw, selected_year, df_attrition)
+/* Tick labels */
+.plotly-tick-label,
+.js-plotly-plot .main-svg text.xtick,
+.js-plotly-plot .main-svg text.ytick {
+    font-size: 10px !important;
+    fill: var(--text-color) !important;
+    color: var(--text-color) !important;
+}
 
-with tabs[2]:
-    career.render(df, df_raw, selected_year)
+/* Reduce Streamlit container padding */
+.block-container {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+}
 
-with tabs[3]:
-    survey.render(df, df_raw, selected_year)
+/* Sidebar styling */
+.css-1d391kg {
+    font-size: 13px;
+    color: var(--text-color);
+}
 
-with tabs[4]:
-    aboutus.render(df, df_raw, selected_year)
+/* Tabs styling */
+.stTabs [role="tab"] {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+/* Ensure header action elements don't affect size */
+.st-emotion-cache-gi0tri {
+    display: inline-block !important;
+}
+
+/* Tab consistency */
+.stTabs [data-baseweb="tab-list"] button {
+    font-size: 1rem !important;
+    font-weight: 500 !important;
+}
+
+/* Chart container adjustments for better spacing */
+.js-plotly-plot {
+    margin-left: 10px !important;
+}
+
+/* Ensure plotly chart SVG has adequate padding */
+.plotly .main-svg {
+    overflow: visible !important;
+}
+
+/* Y-axis title spacing */
+.js-plotly-plot .main-svg g.g-ytitle {
+    transform: translateX(-10px) !important;
+}
+
+/* Thicker container borders - increased to 5px for maximum visibility */
+[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlock"] {
+    border-width: 5px !important;
+}
+
+div[data-testid="stVerticalBlock"] > div[style*="border"] {
+    border-width: 5px !important;
+}
+
+/* Make all bordered containers thicker */
+div[data-testid="column"] > div > div[data-testid="stVerticalBlock"] {
+    border-width: 5px !important;
+}
+
+/* Additional container border styling */
+[data-testid="stVerticalBlock"][style*="border"] {
+    border-width: 5px !important;
+}
