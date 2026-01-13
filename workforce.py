@@ -28,7 +28,7 @@ def render(df, df_raw, selected_year):
     # -----------------------------
     # Section heading (now below Executive Summary)
     # -----------------------------
-    st.markdown("## 📊 Workforce Metrics")
+    st.markdown("## 👥 Workforce Metrics")
 
     # -----------------------------
     # Load CSS file
