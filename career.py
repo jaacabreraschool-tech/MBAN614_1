@@ -29,7 +29,7 @@ def render(df, df_raw, selected_year):
     # -----------------------------
     # Section heading (now below Executive Summary)
     # -----------------------------
-    st.markdown("## 🎯 Career Progression Overview")
+    st.markdown("## 🎯 Career Progression Metrics")
 
     # Ensure numeric conversion for Promotion & Transfer
     def to_num(x): 
