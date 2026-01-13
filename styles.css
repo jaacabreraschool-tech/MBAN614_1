@@ -169,3 +169,22 @@ h5 {
 .js-plotly-plot .main-svg g.g-ytitle {
     transform: translateX(-10px) !important;
 }
+
+/* Thicker container borders - increased to 5px for maximum visibility */
+[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlock"] {
+    border-width: 5px !important;
+}
+
+div[data-testid="stVerticalBlock"] > div[style*="border"] {
+    border-width: 5px !important;
+}
+
+/* Make all bordered containers thicker */
+div[data-testid="column"] > div > div[data-testid="stVerticalBlock"] {
+    border-width: 5px !important;
+}
+
+/* Additional container border styling */
+[data-testid="stVerticalBlock"][style*="border"] {
+    border-width: 5px !important;
+}
