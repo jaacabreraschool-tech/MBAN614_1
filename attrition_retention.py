@@ -85,17 +85,18 @@ def render(df, df_raw, selected_year, df_attrition=None, summary_file="HR Cleane
     # -----------------------------
     # Row 1: Resigned per Year
     # -----------------------------
-    st.markdown("### Resigned per Year")
+    st.markdown("#### Resigned per Year")
     resigned_per_year = df_raw.groupby("Year")["ResignedFlag"].sum().reset_index(name="Resigned")
     fig_resigned = px.bar(resigned_per_year, x="Year", y="Resigned", text="Resigned",
-                          color_discrete_sequence=["#00008B"], title="Resigned Employees per Year")
+                          color_discrete_sequence=["#00008B"])
     fig_resigned.update_layout(
-        height=220, margin=dict(l=20, r=20, t=40, b=20),
+        height=220, margin=dict(l=20, r=20, t=20, b=20),
         yaxis=dict(title="Resigned Employees", tickfont=dict(color="var(--text-color)"), titlefont=dict(color="var(--text-color)")),
         xaxis=dict(title="Year", tickfont=dict(color="var(--text-color)"), titlefont=dict(color="var(--text-color)")),
-        font=dict(color="var(--text-color)"), title_font=dict(color="var(--text-color)"),
+        font=dict(color="var(--text-color)"),
         legend=dict(font=dict(color="var(--text-color)")),
-        uniformtext_minsize=10, uniformtext_mode="hide"
+        uniformtext_minsize=10, uniformtext_mode="hide",
+        showlegend=False
     )
     st.plotly_chart(fig_resigned, use_container_width=True, key="resigned_per_year")
 
@@ -123,9 +124,9 @@ def render(df, df_raw, selected_year, df_attrition=None, summary_file="HR Cleane
             yaxis2=dict(title="Retention Rate (%)", overlaying="y", side="right", range=[80, 100],
                         tickfont=dict(color="var(--text-color)"), titlefont=dict(color="var(--text-color)")),
             xaxis=dict(title="Year", tickfont=dict(color="var(--text-color)"), titlefont=dict(color="var(--text-color)")),
-            font=dict(color="var(--text-color)"), title_font=dict(color="var(--text-color)"),
+            font=dict(color="var(--text-color)"),
             legend=dict(font=dict(color="var(--text-color)")),
-            barmode="group", height=220, margin=dict(l=20, r=20, t=40, b=20)
+            barmode="group", height=220, margin=dict(l=60, r=60, t=20, b=20)
         )
         st.plotly_chart(fig, use_container_width=True, key="retention_by_gender")
 
@@ -138,13 +139,12 @@ def render(df, df_raw, selected_year, df_attrition=None, summary_file="HR Cleane
         retention_df["RetentionRate"] = (retention_df["Active"] / retention_df["Total"]) * 100
         fig_retention = px.bar(retention_df, x="Year", y="RetentionRate", color="Generation", barmode="group",
                                text=retention_df["RetentionRate"].round(1).astype(str) + "%",
-                               color_discrete_sequence=["#ADD8E6", "#00008B", "#87CEEB", "#1E3A8A", "#4682B4"],
-                               title="Retention by Generation (2020–2025)")
+                               color_discrete_sequence=["#ADD8E6", "#00008B", "#87CEEB", "#1E3A8A", "#4682B4"])
         fig_retention.update_layout(
-            height=220, margin=dict(l=20, r=20, t=40, b=20),
+            height=220, margin=dict(l=20, r=20, t=20, b=20),
             yaxis=dict(title="Retention Rate (%)", tickfont=dict(color="var(--text-color)"), titlefont=dict(color="var(--text-color)")),
             xaxis=dict(title="Year", tickfont=dict(color="var(--text-color)"), titlefont=dict(color="var(--text-color)")),
-            font=dict(color="var(--text-color)"), title_font=dict(color="var(--text-color)"),
+            font=dict(color="var(--text-color)"),
             legend=dict(font=dict(color="var(--text-color)")),
             uniformtext_minsize=10, uniformtext_mode="hide"
         )
@@ -153,7 +153,7 @@ def render(df, df_raw, selected_year, df_attrition=None, summary_file="HR Cleane
     # -----------------------------
     # Row 3: Attrition Analysis
     # -----------------------------
-    st.markdown("### Attrition Analysis")
+    st.markdown("#### Attrition Analysis")
 
     col1, col2 = st.columns(2)
 
@@ -172,20 +172,21 @@ def render(df, df_raw, selected_year, df_attrition=None, summary_file="HR Cleane
         )
         fig_monthly = px.bar(
             monthly_attrition, x="Month", y="AttritionCount", text="AttritionCount",
-            color_discrete_sequence=["#00008B"], title=f"Monthly Attrition in {selected_year}"
+            color_discrete_sequence=["#00008B"]
         )
         fig_monthly.update_layout(
-            height=300, margin=dict(l=20, r=20, t=40, b=20),
+            height=300, margin=dict(l=20, r=20, t=20, b=20),
             yaxis=dict(title="Attrition Count", tickfont=dict(color="var(--text-color)"), titlefont=dict(color="var(--text-color)")),
             xaxis=dict(title="Month", tickfont=dict(color="var(--text-color)"), titlefont=dict(color="var(--text-color)")),
-            font=dict(color="var(--text-color)"), title_font=dict(color="var(--text-color)"),
+            font=dict(color="var(--text-color)"),
             legend=dict(font=dict(color="var(--text-color)")),
-            uniformtext_minsize=10, uniformtext_mode="hide"
+            uniformtext_minsize=10, uniformtext_mode="hide",
+            showlegend=False
         )
         st.plotly_chart(fig_monthly, use_container_width=True, key="attrition_by_month")
 
     with col2:
-        st.markdown("#### Attrition by Voluntary vs Involuntary (2020–2025)")
+        st.markdown("#### Attrition by Voluntary vs Involuntary (2020 – 2025)")
         if df_attrition is not None:
             if "Year" not in df_attrition.columns and "Calendar Year" in df_attrition.columns:
                 df_attrition["Year"] = pd.to_datetime(df_attrition["Calendar Year"]).dt.year
@@ -196,14 +197,13 @@ def render(df, df_raw, selected_year, df_attrition=None, summary_file="HR Cleane
             attrition_counts = attrition_df.groupby(["Year", "Status"]).size().reset_index(name="Count")
             fig_attrition = px.bar(
                 attrition_counts, x="Year", y="Count", color="Status", barmode="group", text="Count",
-                color_discrete_map={"Voluntary": "#ADD8E6", "Involuntary": "#00008B"},
-                title="Voluntary vs Involuntary Attrition"
+                color_discrete_map={"Voluntary": "#ADD8E6", "Involuntary": "#00008B"}
             )
             fig_attrition.update_layout(
-                height=300, margin=dict(l=20, r=20, t=40, b=20),
+                height=300, margin=dict(l=20, r=20, t=20, b=20),
                 yaxis=dict(title="Attrition Count", tickfont=dict(color="var(--text-color)"), titlefont=dict(color="var(--text-color)")),
                 xaxis=dict(title="Year", tickfont=dict(color="var(--text-color)"), titlefont=dict(color="var(--text-color)")),
-                font=dict(color="var(--text-color)"), title_font=dict(color="var(--text-color)"),
+                font=dict(color="var(--text-color)"),
                 legend=dict(font=dict(color="var(--text-color)")),
                 uniformtext_minsize=10, uniformtext_mode="hide"
             )
@@ -214,7 +214,7 @@ def render(df, df_raw, selected_year, df_attrition=None, summary_file="HR Cleane
     # -----------------------------
     # Row 4: Net Talent Gain/Loss (already uses Summary tab Net Change)
     # -----------------------------
-    st.markdown("### Net Talent Gain/Loss")
+    st.markdown("#### Net Talent Gain/Loss")
 
     summary_df_row4 = pd.read_excel(summary_file, sheet_name="Summary")
     net_df = summary_df_row4[["Year", "Joins", "Resignations", "Net Change"]].copy()
@@ -228,14 +228,13 @@ def render(df, df_raw, selected_year, df_attrition=None, summary_file="HR Cleane
         net_df, x="Year", y="NetChange",
         text=net_df["NetChange"].apply(lambda x: f"{x:+d}"),
         color="Status", color_discrete_map=color_map,
-        hover_data={"Joins": True, "Resignations": True, "NetChange": True, "Status": True, "Year": True},
-        title="Net Talent Gain/Loss by Year"
+        hover_data={"Joins": True, "Resignations": True, "NetChange": True, "Status": True, "Year": True}
     )
     fig_net.update_layout(
-        height=320, margin=dict(l=20, r=20, t=40, b=20),
+        height=320, margin=dict(l=20, r=20, t=20, b=20),
         yaxis=dict(title="Net Change", tickfont=dict(color="var(--text-color)"), titlefont=dict(color="var(--text-color)")),
         xaxis=dict(title="Year", tickfont=dict(color="var(--text-color)"), titlefont=dict(color="var(--text-color)")),
-        font=dict(color="var(--text-color)"), title_font=dict(color="var(--text-color)"),
+        font=dict(color="var(--text-color)"),
         legend=dict(font=dict(color="var(--text-color)")),
         uniformtext_minsize=10, uniformtext_mode="hide"
     )
