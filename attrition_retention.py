@@ -110,11 +110,16 @@ def render(df, df_raw, selected_year, df_attrition=None, summary_file="HR Cleane
         retention_gender = df_raw.groupby(["Year", "Gender"])["Retention"].sum().reset_index()
         retention_rate_df = df_raw.groupby("Year")["Retention"].mean().reset_index()
         retention_rate_df["RetentionRatePct"] = retention_rate_df["Retention"] * 100
+        
+        # Standardized gender colors (blue palette - unique shades)
+        gender_colors = {"Female": "#6495ED", "Male": "#00008B"}
+        
         fig = go.Figure()
         for gender in retention_gender["Gender"].unique():
             subset = retention_gender[retention_gender["Gender"] == gender]
+            color = gender_colors.get(gender, "#00008B")
             fig.add_bar(x=subset["Year"], y=subset["Retention"], name=gender,
-                        marker_color="#ADD8E6" if gender == "Female" else "#00008B", yaxis="y1")
+                        marker_color=color, yaxis="y1")
         fig.add_trace(go.Scatter(x=retention_rate_df["Year"], y=retention_rate_df["RetentionRatePct"],
                                  mode="lines+markers", name="Retention Rate (%)",
                                  line=dict(color="orange", width=3), yaxis="y2"))
@@ -137,9 +142,18 @@ def render(df, df_raw, selected_year, df_attrition=None, summary_file="HR Cleane
         active_by_year_gen = active_df[active_df["Year"].between(2020, 2025)].groupby(["Year", "Generation"]).size().reset_index(name="Active")
         retention_df = pd.merge(total_by_year_gen, active_by_year_gen, on=["Year", "Generation"], how="left")
         retention_df["RetentionRate"] = (retention_df["Active"] / retention_df["Total"]) * 100
+        
+        # Standardized generation colors
+        generation_colors = {
+            "Gen Z": "#ADD8E6",
+            "Millennial": "#00008B", 
+            "Gen X": "#87CEEB",
+            "Boomer": "#1E3A8A"
+        }
+        
         fig_retention = px.bar(retention_df, x="Year", y="RetentionRate", color="Generation", barmode="group",
                                text=retention_df["RetentionRate"].round(1).astype(str) + "%",
-                               color_discrete_sequence=["#ADD8E6", "#00008B", "#87CEEB", "#1E3A8A", "#4682B4"])
+                               color_discrete_map=generation_colors)
         fig_retention.update_layout(
             height=220, margin=dict(l=20, r=20, t=20, b=20),
             yaxis=dict(title="Retention Rate (%)", tickfont=dict(color="var(--text-color)"), titlefont=dict(color="var(--text-color)")),
@@ -158,7 +172,7 @@ def render(df, df_raw, selected_year, df_attrition=None, summary_file="HR Cleane
     col1, col2 = st.columns(2)
 
     with col1:
-        st.markdown(f"#### Attrition by Month ({selected_year})")
+        st.markdown(f"##### Attrition by Month ({selected_year})")
         attrition_selected = df_raw[(df_raw["Year"] == selected_year) & (df_raw["ResignedFlag"] == 1)].copy()
         attrition_selected["Month"] = pd.to_datetime(attrition_selected["Resignation Date"]).dt.month_name()
         monthly_attrition = (
@@ -186,7 +200,7 @@ def render(df, df_raw, selected_year, df_attrition=None, summary_file="HR Cleane
         st.plotly_chart(fig_monthly, use_container_width=True, key="attrition_by_month")
 
     with col2:
-        st.markdown("#### Attrition by Voluntary vs Involuntary (2020 – 2025)")
+        st.markdown("##### Attrition by Voluntary vs Involuntary (2020 – 2025)")
         if df_attrition is not None:
             if "Year" not in df_attrition.columns and "Calendar Year" in df_attrition.columns:
                 df_attrition["Year"] = pd.to_datetime(df_attrition["Calendar Year"]).dt.year
