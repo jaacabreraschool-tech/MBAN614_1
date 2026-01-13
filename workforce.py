@@ -81,9 +81,18 @@ def render(df, df_raw, selected_year):
             .reset_index(name="Headcount")
             .sort_values("Calendar Year")
         )
+        
+        # Standardized generation colors
+        generation_colors = {
+            "Gen Z": "#ADD8E6",
+            "Millennial": "#00008B",
+            "Gen X": "#87CEEB",
+            "Boomer": "#1E3A8A"
+        }
+        
         fig2 = px.bar(headcount_gen, x="Calendar Year", y="Headcount",
                       color="Generation", barmode="stack",
-                      color_discrete_sequence=["#ADD8E6", "#00008B", "#87CEEB", "#1E3A8A", "#4682B4"])
+                      color_discrete_map=generation_colors)
         st.plotly_chart(fig2, use_container_width=True, height=300)
 
     # -----------------------------
@@ -101,13 +110,21 @@ def render(df, df_raw, selected_year):
         a1.markdown(f"<div class='metric-label'>Average Age</div><div class='metric-value'>{avg_age}</div>", unsafe_allow_html=True)
         a2.markdown(f"<div class='metric-label'>Median Age</div><div class='metric-value'>{median_age}</div>", unsafe_allow_html=True)
 
+        # Standardized generation colors
+        generation_colors = {
+            "Gen Z": "#ADD8E6",
+            "Millennial": "#00008B",
+            "Gen X": "#87CEEB",
+            "Boomer": "#1E3A8A"
+        }
+
         if "Generation" in age_year.columns:
             fig3 = px.histogram(
                 age_year, x="Age",
                 y="Count",
                 color="Generation",
                 barmode="group",
-                color_discrete_sequence=["#ADD8E6", "#00008B", "#87CEEB", "#1E3A8A", "#4682B4"]
+                color_discrete_map=generation_colors
             )
         else:
             fig3 = px.histogram(
@@ -129,7 +146,11 @@ def render(df, df_raw, selected_year):
         for i, (g, c) in enumerate(gender_counts.items()):
             gcols[i].markdown(f"<div class='metric-label'>{g} Employees</div><div class='metric-value'>{int(c)}</div>", unsafe_allow_html=True)
 
-        fig4 = px.bar(gender_year, x="Position/Level", y="Count", color="Gender", barmode="stack")
+        # Standardized gender colors (blue palette - unique shades)
+        gender_colors = {"Female": "#6495ED", "Male": "#00008B"}
+        
+        fig4 = px.bar(gender_year, x="Position/Level", y="Count", color="Gender", 
+                      barmode="stack", color_discrete_map=gender_colors)
         st.plotly_chart(fig4, use_container_width=True, height=300)
 
     with colC:
