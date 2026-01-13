@@ -386,3 +386,33 @@ def render(df, df_raw, selected_year):
             )
             
             st.plotly_chart(fig_corr_promo, use_container_width=True)
+
+@st.cache_data
+def train_resignation_model(df_raw):
+    df_analysis = df_raw.copy()
+    df_analysis["Resigned"] = df_analysis["Resignee Checking"].apply(
+        lambda x: 0 if str(x).strip().upper() == "ACTIVE" else 1
+    )
+    
+    features = ["Tenure", "Position/Level", "Generation", "Gender", "Promotion & Transfer"]
+    le = LabelEncoder()
+    df_encoded = df_analysis[features + ["Resigned"]].copy()
+    
+    for col in ["Position/Level", "Generation", "Gender"]:
+        if col in df_encoded.columns:
+            df_encoded[col] = le.fit_transform(df_encoded[col].astype(str))
+    
+    df_encoded = df_encoded.dropna()
+    X = df_encoded[features]
+    y = df_encoded["Resigned"]
+    
+    rf = RandomForestClassifier(n_estimators=100, random_state=42)
+    rf.fit(X, y)
+    
+    importance_df = pd.DataFrame({
+        "Driver": features,
+        "Importance": rf.feature_importances_
+    }).sort_values("Importance", ascending=False)
+    
+    importance_df["Importance %"] = (importance_df["Importance"] * 100).round(1)
+    return importance_df, df_encoded[features + ["Resigned"]]
