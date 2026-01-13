@@ -143,12 +143,12 @@ def render(df, df_raw, selected_year, df_attrition=None, summary_file="HR Cleane
         retention_df = pd.merge(total_by_year_gen, active_by_year_gen, on=["Year", "Generation"], how="left")
         retention_df["RetentionRate"] = (retention_df["Active"] / retention_df["Total"]) * 100
         
-        # Standardized generation colors
+        # Standardized generation colors - unique blue shades
         generation_colors = {
-            "Gen Z": "#ADD8E6",
-            "Millennial": "#00008B", 
-            "Gen X": "#87CEEB",
-            "Boomer": "#1E3A8A"
+            "Gen Z": "#87CEEB",      # Sky Blue
+            "Millennial": "#4169E1",  # Royal Blue
+            "Gen X": "#1E90FF",       # Dodger Blue
+            "Boomer": "#00008B"       # Dark Blue
         }
         
         fig_retention = px.bar(retention_df, x="Year", y="RetentionRate", color="Generation", barmode="group",
