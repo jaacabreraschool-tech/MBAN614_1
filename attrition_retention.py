@@ -138,22 +138,34 @@ def render(df, df_raw, selected_year, df_attrition=None, summary_file="HR Cleane
     with col2:
         st.markdown("#### Retention by Generation")
         active_df = df_raw[df_raw["Resignee Checking"] == "ACTIVE"]
+        
+        # Normalize Generation values
+        df_raw["Generation"] = df_raw["Generation"].str.strip().str.title()
+        
         total_by_year_gen = df_raw[df_raw["Year"].between(2020, 2025)].groupby(["Year", "Generation"]).size().reset_index(name="Total")
         active_by_year_gen = active_df[active_df["Year"].between(2020, 2025)].groupby(["Year", "Generation"]).size().reset_index(name="Active")
         retention_df = pd.merge(total_by_year_gen, active_by_year_gen, on=["Year", "Generation"], how="left")
         retention_df["RetentionRate"] = (retention_df["Active"] / retention_df["Total"]) * 100
         
+        # Define generation order (alphabetical)
+        generation_order = ["Baby Boomer", "Gen X", "Gen Z", "Millennial"]
+        
         # Standardized generation colors - unique blue shades
         generation_colors = {
-            "Gen Z": "#87CEEB",      # Sky Blue
-            "Millennial": "#4169E1",  # Royal Blue
-            "Gen X": "#1E90FF",       # Dodger Blue
-            "Boomer": "#00008B"       # Dark Blue
+            "Gen Z": "#87CEEB",           # Sky Blue
+            "Millennial": "#4169E1",      # Royal Blue
+            "Gen X": "#1E90FF",           # Dodger Blue
+            "Baby Boomer": "#00008B",     # Dark Blue
+            "Boomer": "#00008B"           # Dark Blue (fallback)
         }
+        
+        # Convert Generation to categorical with defined order
+        retention_df["Generation"] = pd.Categorical(retention_df["Generation"], categories=generation_order, ordered=True)
         
         fig_retention = px.bar(retention_df, x="Year", y="RetentionRate", color="Generation", barmode="group",
                                text=retention_df["RetentionRate"].round(1).astype(str) + "%",
-                               color_discrete_map=generation_colors)
+                               color_discrete_map=generation_colors,
+                               category_orders={"Generation": generation_order})
         fig_retention.update_layout(
             height=220, margin=dict(l=20, r=20, t=20, b=20),
             yaxis=dict(title="Retention Rate (%)", tickfont=dict(color="var(--text-color)"), titlefont=dict(color="var(--text-color)")),
