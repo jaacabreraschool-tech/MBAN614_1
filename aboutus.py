@@ -260,6 +260,7 @@ def render(df, df_raw, selected_year):
     st.markdown("---")
     st.markdown("""
     <div style='text-align: center; color: gray; font-size: 12px;'>
-    &copy; 2025 Angelie D. Agustin. All rights reserved. | Developed for academic purposes. | Last updated: January 2025
+    &copy; 2025 Agustin, Pacheco, Cabrera | MBAN620 CGON01 - Business Data Visualization | Mapúa University Makati<br>
+    Final Project | Master in Analytics (MAN) | January 2025
     </div>
     """, unsafe_allow_html=True)
