@@ -4,7 +4,7 @@ import plotly.express as px
 
 
 def render(df, df_raw, selected_year):
-    st.subheader("Career Progression Overview") 
+    st.markdown("## 📊 Career Progression Overview")
 
     # Ensure numeric conversion for Promotion & Transfer
     def to_num(x): 
@@ -46,13 +46,19 @@ def render(df, df_raw, selected_year):
         promotion_rate = 0
 
     # Top metrics row
-    col1, col2, col3 = st.columns(3) 
-    col1.metric("Promotions & Transfers", total_promotions_transfers) 
-    col2.metric("Average Tenure", f"{avg_tenure:.1f} yrs") 
-    col3.metric("Promotion Rate", f"{promotion_rate:.1f}%") 
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.markdown("<div class='metric-label'>Promotions & Transfers</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='metric-value'>{total_promotions_transfers}</div>", unsafe_allow_html=True)
+    with col2:
+        st.markdown("<div class='metric-label'>Average Tenure</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='metric-value'>{avg_tenure:.1f} yrs</div>", unsafe_allow_html=True)
+    with col3:
+        st.markdown("<div class='metric-label'>Promotion Rate</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='metric-value'>{promotion_rate:.1f}%</div>", unsafe_allow_html=True)
 
     # Promotion & Transfer Tracking
-    st.markdown("## Promotion & Transfer Tracking") 
+    st.markdown("#### Promotion & Transfer Tracking") 
 
     # Summary by year (active employees only)
     promo_summary = (
@@ -65,18 +71,25 @@ def render(df, df_raw, selected_year):
 
     with col1:
         # Line chart for yearly trend
+        st.markdown("##### Promotions & Transfers per Year")
         fig1 = px.line(
             promo_summary,
             x="Year",
             y="Promotion & Transfer",
-            markers=True,
-            title="Promotions & Transfers per Year (Active Employees)"
+            markers=True
         )
-        fig1.update_traces(line=dict(width=3), marker=dict(size=8))
-        st.plotly_chart(fig1, use_container_width=True, height=250)
+        fig1.update_traces(line=dict(width=3, color="#00008B"), marker=dict(size=8, color="#00008B"))
+        fig1.update_layout(
+            height=250, margin=dict(l=20, r=20, t=20, b=20),
+            yaxis=dict(title="Count", tickfont=dict(color="var(--text-color)"), titlefont=dict(color="var(--text-color)")),
+            xaxis=dict(title="Year", tickfont=dict(color="var(--text-color)"), titlefont=dict(color="var(--text-color)")),
+            font=dict(color="var(--text-color)")
+        )
+        st.plotly_chart(fig1, use_container_width=True)
 
     with col2:
         # Stacked bar chart for position/level distribution
+        st.markdown("##### By Position/Level")
         pos_summary = (
             df_raw[df_raw["Resignee Checking"] == "ACTIVE"]
             .groupby(["Year", "Position/Level"], as_index=False)["Promotion & Transfer"].sum()
@@ -86,12 +99,19 @@ def render(df, df_raw, selected_year):
             x="Year",
             y="Promotion & Transfer",
             color="Position/Level",
-            title="Promotions & Transfers by Position/Level (Active Employees)"
+            color_discrete_map={"Associate": "#ADD8E6", "Manager & Up": "#00008B"}
         )
-        st.plotly_chart(fig2, use_container_width=True, height=250)
+        fig2.update_layout(
+            height=250, margin=dict(l=20, r=20, t=20, b=20),
+            yaxis=dict(title="Count", tickfont=dict(color="var(--text-color)"), titlefont=dict(color="var(--text-color)")),
+            xaxis=dict(title="Year", tickfont=dict(color="var(--text-color)"), titlefont=dict(color="var(--text-color)")),
+            font=dict(color="var(--text-color)"),
+            legend=dict(font=dict(color="var(--text-color)"))
+        )
+        st.plotly_chart(fig2, use_container_width=True)
 
     # Tenure Distribution of Promoted Employees
-    st.markdown("## Tenure Distribution of Promoted Employees")
+    st.markdown(f"#### Tenure Distribution of Promoted Employees ({selected_year})")
     promoted_employees = career_year[career_year["Promotion & Transfer"] == 1]
 
     if not promoted_employees.empty:
@@ -100,14 +120,21 @@ def render(df, df_raw, selected_year):
             promoted_employees,
             x="Tenure",
             nbins=10,
-            histnorm=None,  # show raw counts
-            title=f"Tenure Distribution of Promoted Employees ({selected_year})"
+            histnorm=None,
+            color_discrete_sequence=["#00008B"]
         )
         # Add count + percentage labels
         fig3.update_traces(
-            texttemplate="%{y} (" + "%{percent:.0%}" + ")",
+            texttemplate="%{y}",
             textposition="outside"
         )
-        st.plotly_chart(fig3, use_container_width=True, height=250)
+        fig3.update_layout(
+            height=250, margin=dict(l=20, r=20, t=20, b=20),
+            yaxis=dict(title="Count", tickfont=dict(color="var(--text-color)"), titlefont=dict(color="var(--text-color)")),
+            xaxis=dict(title="Tenure (years)", tickfont=dict(color="var(--text-color)"), titlefont=dict(color="var(--text-color)")),
+            font=dict(color="var(--text-color)"),
+            showlegend=False
+        )
+        st.plotly_chart(fig3, use_container_width=True)
     else:
         st.info("No promoted employees found for the selected year.")
