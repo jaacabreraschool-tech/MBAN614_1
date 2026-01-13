@@ -1,5 +1,16 @@
 import streamlit as st
 import pandas as pd
+import os
+
+def display_profile_photo(photo_path, width=150, shape="circle"):
+    """Helper function to display profile photos with consistent styling"""
+    if os.path.exists(photo_path):
+        if shape == "square":
+            st.markdown(f'<style>.square-photo {{ border: 3px solid #00008B; }} </style>', unsafe_allow_html=True)
+        st.image(photo_path, width=width, use_container_width=False)
+    else:
+        st.markdown("<h1 style='text-align: center;'>👤</h1>", unsafe_allow_html=True)
+        st.caption(f"Photo not found: {photo_path}")
 
 def render(df, df_raw, selected_year):
     st.markdown("## 📚 About This Dashboard")
@@ -213,34 +224,79 @@ def render(df, df_raw, selected_year):
     with st.container(border=True):
         st.markdown("### 👨‍🎓 Research Team")
         
-        col1, col2, col3 = st.columns(3)
+        # Add CSS for uniform photo sizing and column heights
+        st.markdown("""
+        <style>
+        [data-testid="stImage"] {
+            width: 150px !important;
+            height: 150px !important;
+            object-fit: cover;
+            display: block;
+            margin-left: auto !important;
+            margin-right: auto !important;
+        }
+        [data-testid="column"] {
+            min-height: 750px;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        
+        col1, col2, col3 = st.columns(3, gap="medium")
         
         with col1:
+            col1_inner_left, col1_inner_center, col1_inner_right = st.columns([0.2, 0.6, 0.2])
+            with col1_inner_center:
+                display_profile_photo("/Users/jaacabrera/Documents/Python Scripts/data_io/HR Dashboard 01122025/angelie.jpg", width=150)
+            st.write("")  # Spacing
+            st.markdown("""**Angelie D. Agustin**""")
             st.markdown("""
-            **Angelie D. Agustin**
             - Master's Student, MAN
             - Mapúa University Makati
             - Email: angelie.agustin@mapua.edu.ph
             - LinkedIn: https://ph.linkedin.com/in/angelie-agustin
+            
+            ---
+            
+            Angelie Agustin is a Business Continuity Consultant focused on operational resilience, 
+            regulatory compliance, and data-driven reporting. With a BS in Statistics and an MA in 
+            Education (Mathematics), she blends analytical rigor with thoughtful problem-solving. 
+            Outside of work, she enjoys travelling, and continuously growing—now pursuing MAN at 
+            Mapúa University to deepen her expertise in analytics and decision-making.
             """)
         
         with col2:
+            col2_inner_left, col2_inner_center, col2_inner_right = st.columns([0.2, 0.6, 0.2])
+            with col2_inner_center:
+                display_profile_photo("/Users/jaacabrera/Documents/Python Scripts/data_io/HR Dashboard 01122025/catherine.jpg", width=150)
+            st.write("")  # Spacing
+            st.markdown("""**Ma. Catherine Pacheco**""")
             st.markdown("""
-            **Ma. Catherine Pacheco**
             - Master's Student, MAN
             - Mapúa University Makati
             - Email: mcpacheco@mymail.mapua.edu.ph
+            - LinkedIn: https://www.linkedin.com/in/catherine-p-160717178/
+            
+            ---
+            
+            Catherine is a Security and GRC professional with hands-on experience across the Consumer Goods & Services, Finance, FMCG, Manufacturing, Retail, and Utilities industries. She possesses deep expertise in Security Management and Administration, consistently delivering results through end-to-end security project management. And successfully led and supported various SAP, SailPoint, Pathlock, and related technology implementations, system integrations, project enhancements, rollouts, data and system migrations, and upgrades for diverse clients. Whether tackling complex security initiatives or streamlining access governance, Catherine doesn’t just meet expectations; she exceeds them and redefines the standards of excellence.
             """)
         
         with col3:
+            col3_inner_left, col3_inner_center, col3_inner_right = st.columns([0.2, 0.6, 0.2])
+            with col3_inner_center:
+                display_profile_photo("/Users/jaacabrera/Documents/Python Scripts/data_io/HR Dashboard 01122025/juliana.jpg", width=150)
+            st.write("")  # Spacing
+            st.markdown("""**Juliana Amparo A. Cabrera**""")
             st.markdown("""
-            **Juliana Amparo A. Cabrera**
             - Master's Student, MAN
             - Mapúa University Makati
             - Email: jaacabrera@mymail.mapua.edu.ph
             - LinkedIn: https://www.linkedin.com/in/jaacabrera/
+            
+            ---
+            
+            Juliana "Jam" is a Software Quality Assurance professional specializing in testing desktop, web, and mobile applications. With expertise in analyzing business requirements, crafting test strategies, and executing manual tests, Jam ensures high-quality deliverables across platforms. A graduate of Mapúa University, Jam is currently pursuing an MBAN at Mapúa University to continuously upskill.
             """)
-    
     
     # -----------------------------
     # Contact & Resources
