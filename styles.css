@@ -4,13 +4,57 @@ body {
     color: var(--text-color); /* adapts to theme */
 }
 
-/* Section headings (### in Streamlit -> <h3>) */
-h3 {
-    font-size: 18px !important;
-    font-weight: bold !important;
+/* Main page title (# in Streamlit -> <h1>) */
+h1 {
+    font-size: 2rem !important;
+    font-weight: 700 !important;
+    margin-bottom: 1rem !important;
+    margin-top: 0.5rem !important;
     color: var(--text-color) !important;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    line-height: 1.2 !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+}
+
+/* Main section titles (## in Streamlit -> <h2>) */
+h2 {
+    font-size: 1.75rem !important;
+    font-weight: 700 !important;
+    margin-bottom: 1.5rem !important;
+    margin-top: 0.5rem !important;
+    color: var(--text-color) !important;
+    line-height: 1.2 !important;
+}
+
+/* Section headings (### in Streamlit -> <h3>) - styled as h5 */
+h3 {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    margin-bottom: 0.5rem !important;
+    margin-top: 0.75rem !important;
+    color: var(--text-color) !important;
+    line-height: 1.5 !important;
+}
+
+/* Consistent heading styles across all tabs */
+h4 {
+    font-size: 1.15rem !important;
+    font-weight: 600 !important;
+    margin-bottom: 0.75rem !important;
+    margin-top: 1rem !important;
+    color: var(--text-color) !important;
+    line-height: 1.4 !important;
+}
+
+/* Subsection headings (h5) */
+h5 {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    margin-bottom: 0.5rem !important;
+    margin-top: 0.75rem !important;
+    color: var(--text-color) !important;
+    line-height: 1.5 !important;
 }
 
 /* Metric labels and values */
@@ -98,4 +142,30 @@ h3 {
     font-size: 13px;
     font-weight: 500;
     color: var(--text-color);
+}
+
+/* Ensure header action elements don't affect size */
+.st-emotion-cache-gi0tri {
+    display: inline-block !important;
+}
+
+/* Tab consistency */
+.stTabs [data-baseweb="tab-list"] button {
+    font-size: 1rem !important;
+    font-weight: 500 !important;
+}
+
+/* Chart container adjustments for better spacing */
+.js-plotly-plot {
+    margin-left: 10px !important;
+}
+
+/* Ensure plotly chart SVG has adequate padding */
+.plotly .main-svg {
+    overflow: visible !important;
+}
+
+/* Y-axis title spacing */
+.js-plotly-plot .main-svg g.g-ytitle {
+    transform: translateX(-10px) !important;
 }
