@@ -29,7 +29,7 @@ def render(df, df_raw, selected_year, df_attrition=None, summary_file="HR Cleane
     # -----------------------------
     # Section heading (now below Executive Summary)
     # -----------------------------
-    st.markdown("## 📊 Attrition and Retention Metrics")
+    st.markdown("## 🔄 Attrition and Retention Metrics")
 
     # -----------------------------
     # Ensure Retention column exists
