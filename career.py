@@ -22,14 +22,14 @@ def render(df, df_raw, selected_year):
         with summary_col2:
             st.markdown("""
             - 👥 **Inclusive Advancement**: Promotions distributed across both Associates and Manager & Up levels
-            - 📊 **High Promotion Rate**: X% of active employees promoted annually, well above industry standards
+            - 📊 **High Promotion Rate**: 14-20% of active employees promoted annually, well above industry standards
             - 🚀 **Talent Investment**: Strong focus on developing and retaining internal talent over external hiring
             """)
 
     # -----------------------------
     # Section heading (now below Executive Summary)
     # -----------------------------
-    st.markdown("## 📊 Career Progression Metrics")
+    st.markdown("## 🎯 Career Progression Overview")
 
     # Ensure numeric conversion for Promotion & Transfer
     def to_num(x): 
@@ -126,12 +126,13 @@ def render(df, df_raw, selected_year):
                 df_raw[df_raw["Resignee Checking"] == "ACTIVE"]
                 .groupby(["Year", "Position/Level"], as_index=False)["Promotion & Transfer"].sum()
             )
+            # Standardized colors: Associate=Female, Manager & Up=Male
             fig2 = px.bar(
                 pos_summary,
                 x="Year",
                 y="Promotion & Transfer",
                 color="Position/Level",
-                color_discrete_map={"Associate": "#ADD8E6", "Manager & Up": "#00008B"}
+                color_discrete_map={"Associate": "#6495ED", "Manager & Up": "#00008B"}
             )
             fig2.update_layout(
                 height=250, margin=dict(l=20, r=20, t=20, b=20),
