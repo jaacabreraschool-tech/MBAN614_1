@@ -31,7 +31,7 @@ def render(df, df_raw, selected_year):
     # -----------------------------
     # Section heading (now below Executive Summary)
     # -----------------------------
-    st.markdown("## 💬 Survey & Feedback Analytics")
+    st.markdown("## 💬 Survey & Feedback Metrics")
 
     # -----------------------------
     # Load survey datasets
