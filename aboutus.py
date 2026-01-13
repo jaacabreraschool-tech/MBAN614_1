@@ -230,7 +230,7 @@ def render(df, df_raw, selected_year):
             **Juliana Amparo A. Cabrera**
             - Master's Student, MAN
             - Mapúa University Makati
-            - Email: jacabrera@mymail.mapua.edu.ph
+            - Email: jaacabrera@mymail.mapua.edu.ph
             - LinkedIn: https://ph.linkedin.com/in/juliana-cabrera
             """)
     
